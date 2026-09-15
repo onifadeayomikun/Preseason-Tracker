@@ -1,16 +1,26 @@
-# React + Vite
+# Preseason Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Tracks a club's U21 players and the countries they played in during preseason, visualized on a world map.
 
-Currently, two official plugins are available:
+## Features
+- World map showing countries visited during preseason
+- U21 player roster tied to each trip
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
+- React (plain JS)
+- Oxlint
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+git clone <repo-url>
+cd passport21
+npm install
+npm run dev
 
-## Expanding the Oxlint configuration
+## Linting
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+npx oxlint --react-plugin
+
+## License
+TBD
+>>>>>>> 76572bc41d84483a5f3188479332cd901d6db8e4
