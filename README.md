@@ -13,11 +13,9 @@ Tracks a club's U21 players and the countries they played in during preseason, v
 ## Getting Started
 
 git clone <repo-url>
-cd passport21
+cd Preseason Tracker
 npm install
 npm run dev
-
-## Linting
 
 npx oxlint --react-plugin
 
