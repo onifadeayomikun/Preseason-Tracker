@@ -2,8 +2,8 @@
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #143128;
-  background: #edf4ee;
+  color: #e8f3ec;
+  background: #0f1720;
 }
 
 * {
@@ -18,17 +18,70 @@ html, body, #root {
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #edf4ee 0%, #e2efe5 100%);
+  background: linear-gradient(180deg, #0f1720 0%, #172a2c 100%);
+}
+
+.app {
+  --page-bg: #0f1720;
+  --page-bg-2: #172a2c;
+  --heading-color: #edf9f0;
+  --map-bg: #112d2a;
+  --map-fill: #5c6b7a;
+  --map-fill-hover: #7c8fa3;
+  --map-stroke: #e5edf1;
+  --button-bg: rgba(255, 255, 255, 0.08);
+  --button-text: #edf9f0;
+  --button-border: rgba(255, 255, 255, 0.14);
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--page-bg) 0%, var(--page-bg-2) 100%);
+  color: var(--heading-color);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.app.light {
+  --page-bg: #edf4f7;
+  --page-bg-2: #dfeaf2;
+  --heading-color: #1b2c3a;
+  --map-bg: #d8e5eb;
+  --map-fill: #7f93a8;
+  --map-fill-hover: #5c718b;
+  --map-stroke: #23364b;
+  --button-bg: rgba(17, 26, 39, 0.08);
+  --button-text: #1b2c3a;
+  --button-border: rgba(17, 26, 39, 0.12);
+}
+
+.theme-toggle {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--button-border);
+  border-radius: 999px;
+  background: var(--button-bg);
+  color: var(--button-text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+  z-index: 10;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-1px);
 }
 
 .heading {
+  width: 100%;
   text-align: center;
   margin: 0;
-  padding: 1.25rem 1rem 0.5rem;
+  padding: 1rem 1rem 0.5rem;
   font-size: clamp(2.1rem, 4vw, 4rem);
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: #183b2f;
+  color: var(--heading-color);
 }
 
 .ag-canvas {
@@ -42,17 +95,17 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-  background: #edf4ee;
+  background: var(--map-bg);
 }
 
 .ag-canvas_svg path {
-  fill: #3f8f6b;
-  stroke: #eaf5ee;
-  stroke-width: 0.6;
+  fill: var(--map-fill);
+  stroke: var(--map-stroke);
+  stroke-width: 0.7;
   stroke-linejoin: round;
   transition: fill 0.2s ease;
 }
 
 .ag-canvas_svg path:hover {
-  fill: #6eb48d;
+  fill: var(--map-fill-hover);
 }

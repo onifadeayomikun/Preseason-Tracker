@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './App.css'
 import Map from './map.jsx'
 
@@ -6,11 +7,21 @@ function Heading() {
 }
 
 function App() {
+  const [isLightMode, setIsLightMode] = useState(false)
+
   return (
-    <>
-    <Heading />
-    <Map />
-    </>
+    <div className={`app ${isLightMode ? 'light' : 'dark'}`}>
+      <button
+        type="button"
+        className="theme-toggle"
+        onClick={() => setIsLightMode((prev) => !prev)}
+        aria-label={isLightMode ? 'Switch to dark mode' : 'Switch to light mode'}
+      >
+        {isLightMode ? 'Dark mode' : 'Light mode'}
+      </button>
+      <Heading />
+      <Map />
+    </div>
   )
 }
 
