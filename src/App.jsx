@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import Map from './map.jsx'
+import Form from './form.jsx'
 
 function Heading() {
   return <h1 className="heading">Preseason Tracker</h1>
@@ -20,6 +21,7 @@ function App() {
         {isLightMode ? 'Dark mode' : 'Light mode'}
       </button>
       <Heading />
+      <Form />
       <Map />
     </div>
   )
