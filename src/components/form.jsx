@@ -1,46 +1,31 @@
-const clubs = [
-    'Arsenal',
-    'Aston Villa',
-    'Bournemouth',
-    'Brentford',
-    'Brighton',
-    'Burnley',
-    'Chelsea',
-    'Crystal Palace',
-    'Everton',
-    'Fulham',
-    'Ipswich Town',
-    'Leicester City',
-    'Leeds United',
-    'Liverpool',
-    'Manchester City',
-    'Manchester United',
-    'Newcastle United',
-    'Nottingham Forest',
-    'Southampton',
-    'Tottenham Hotspur',
-    'West Ham United',
-    'Wolverhampton Wanderers'
-]
-
-const seasons = []
-
-for (let start = 1992; start <= 2026; start++) {
-    const end = start + 1
-    seasons.push(`${start}-${String(end).slice(-2)}`)
-}
+import apiClient from '../api/client';
+import { useEffect, useState } from 'react';
 
 function Form() {
+    const [ data, setData ] = useState(null);
+    const [ error, setError ] = useState(null);
+    const [ loading, setLoading ] = useState(true);
+    {JSON.stringify(data)}
+
+    useEffect(() => {
+        apiClient.get("/v1/club")
+            .then(res => setData(res.data))
+            .catch(err => setError(err.message))
+            .finally(() => setLoading(false));
+    }, [])
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error}</p>;
+    {JSON.stringify(data)}
+
     return (
         <form action="" method="get">
             <div>
                 <label htmlFor="club-select">Club</label>
                 <select id="club-select" name="club">
-                    {clubs.map((club) => (
                         <option key={club} value={club}>
-                            {club}
+                            {JSON.stringify(data)}
                         </option>
-                    ))}
                 </select>
             </div>
 
