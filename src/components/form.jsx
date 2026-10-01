@@ -24,7 +24,7 @@ function Form() {
                 <label htmlFor="club-select">Club</label>
                 <select id="club-select" name="club">
                         <option key={club} value={club}>
-                            {JSON.stringify(data)}
+                            {JSON.stringify(data.rows)}
                         </option>
                 </select>
             </div>
