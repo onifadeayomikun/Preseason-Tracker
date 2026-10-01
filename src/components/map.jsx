@@ -2,23 +2,21 @@ import './App.css'
 import apiClient from '../api/client';
 import { useEffect, useState } from 'react';
 
-function Map() {
-    const [ data, setData ] = useState(null);
+function WorldMap({ selectedCountryCode }) {
+    const [ data, setData ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
 
     useEffect(() => {
         apiClient.get('/api/items')
-            .then(res => setData(res.data))
+            .then(res => setData(Array.isArray(res.data) ? res.data : []))
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
     }, [])
 
     if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
 
     const itemsByCountry = new Map(data.map((item) => [item.countryCode, item]));
-
     function getCountryFill(countryCode) {
         const count = itemsByCountry.get(countryCode)?.count ?? 0;
         return count > 0 ? "#58b889" : "#5c6b7a";
@@ -27,11 +25,13 @@ function Map() {
     const countryStyles = [...itemsByCountry.keys()]
         .filter((countryCode) => /^[A-Z]{2}$/.test(countryCode))
         .map((countryCode) => `#${countryCode} { fill: ${getCountryFill(countryCode)}; }`)
+        .concat(/^[A-Z]{2}$/.test(selectedCountryCode) ? [`#${selectedCountryCode} { fill: #f4c95d !important; }`] : [])
         .join("\n");
 
     return (
         <section className="ag-canvas">
-        <svg className="ag-canvas_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        {error && <p className="map-status" role="status">Trip data unavailable; showing the map without trip highlights.</p>}
+        <svg className="ag-canvas_svg" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
             version="1.1" viewBox="0 0 1008 651">
             <style>{countryStyles}</style>
             <path id="AE" title="United Arab Emirates"
@@ -391,4 +391,4 @@ function Map() {
         </section>
     )
 }
-export default Map
+export default WorldMap

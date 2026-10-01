@@ -9,6 +9,7 @@ function Heading() {
 
 function App() {
   const [isLightMode, setIsLightMode] = useState(false)
+  const [selectedClubCountryCode, setSelectedClubCountryCode] = useState('')
 
   return (
     <div className={`app ${isLightMode ? 'light' : 'dark'}`}>
@@ -21,8 +22,8 @@ function App() {
         {isLightMode ? 'Dark mode' : 'Light mode'}
       </button>
       <Heading />
-      <Form />
-      <Map />
+      <Form onCountryCodeChange={setSelectedClubCountryCode} />
+      <Map selectedCountryCode={selectedClubCountryCode} />
     </div>
   )
 }

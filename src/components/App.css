@@ -85,10 +85,24 @@ body {
 }
 
 .ag-canvas {
+  position: relative;
   width: 100vw;
   height: calc(100vh - 88px);
   margin: 0;
   display: block;
+}
+
+.map-status {
+  position: absolute;
+  z-index: 1;
+  top: 0.75rem;
+  left: 1rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  background: rgba(15, 23, 32, 0.88);
+  color: #edf9f0;
+  font-size: 0.875rem;
 }
 
 .ag-canvas_svg {

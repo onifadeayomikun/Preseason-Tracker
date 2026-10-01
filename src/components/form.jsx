@@ -1,7 +1,7 @@
 import apiClient from '../api/client';
 import { useEffect, useState } from 'react';
 
-function Form() {
+function Form({ onCountryCodeChange }) {
     const [ clubs, setClubs ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
@@ -14,10 +14,11 @@ function Form() {
                 const clubList = Array.isArray(res.data) ? res.data : [];
                 setClubs(clubList);
                 setSelectedClub(clubList[0]?.name ?? '');
+                onCountryCodeChange?.(clubList[0]?.country_code ?? '');
             })
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
-    }, [])
+    }, [onCountryCodeChange])
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -37,8 +38,11 @@ function Form() {
                     name="club"
                     value={selectedClub}
                     onChange={(event) => {
-                        setSelectedClub(event.target.value);
+                        const clubName = event.target.value;
+                        const club = clubs.find((item) => item.name === clubName);
+                        setSelectedClub(clubName);
                         setSelectedSeason('');
+                        onCountryCodeChange?.(club?.country_code ?? '');
                     }}
                 >
                     {clubs.map((club) => (
