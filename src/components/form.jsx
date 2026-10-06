@@ -33,23 +33,10 @@ function Form({ onCountryCodeChange }) {
         <form className="tracker-form" onSubmit={(event) => event.preventDefault()}>
             <div>
                 <label htmlFor="club-select">Club</label>
-                <select
-                    id="club-select"
-                    name="club"
-                    value={selectedClub}
-                    onChange={(event) => {
-                        const clubName = event.target.value;
-                        const club = clubs.find((item) => item.name === clubName);
-                        setSelectedClub(clubName);
-                        setSelectedSeason('');
-                        onCountryCodeChange?.(club?.country_code ?? '');
-                    }}
-                >
-                    {clubs.map((club) => (
-                        <option key={club.name} value={club.name}>
-                            {club.name}
+                <select id="club-select" name="club">
+                        <option key={club} value={club}>
+                            {JSON.stringify(data)}
                         </option>
-                    ))}
                 </select>
             </div>
 
