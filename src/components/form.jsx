@@ -23,7 +23,7 @@ function Form({ onCountryCodeChange }) {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
 
-    const currentClub = clubs.find((club) => club.name === selectedClub);
+    // const currentClub = clubs.find((club) => club.name === selectedClub);
     // const seasons = Array.from(
     //     { length: Number(currentClub?.seasons_available) || 0 },
     //     (_, index) => index + 1
@@ -47,20 +47,34 @@ function Form({ onCountryCodeChange }) {
         <form className="tracker-form" onSubmit={(event) => event.preventDefault()}>
             <div>
                 <label htmlFor="club-select">Club</label>
-                <select id="club-select" name="club">
-                        <option key={club} value={club}>
-                            {JSON.stringify(data)}
+                <select
+                    id="club-select"
+                    name="club"
+                    value={selectedClub}
+                    onChange={(event) => setSelectedClub(event.target.value)}
+                >
+                    {clubs.map((club) => (
+                        <option key={club.name} value={club.name}>
+                            {club.name}
                         </option>
+                    ))}
                 </select>
             </div>
 
             <div>
                 <label htmlFor="season-select">Season</label>
-                <select id="season-select" name="season" value={selectedSeason}>
+                <select 
+                    id="season-select" 
+                    name="season" 
+                    value={selectedSeason}
+                    onChange={(event) => setSelectedSeason(event.target.value)}
+                >
                     <option value="">Select a season</option>
-                        <option key={season} value={season}>
-                            Season {JSON.stringify(data)}
+                    {seasons.map((season) => (
+                        <option key={season.season_label} value={season.season_label}>
+                            Season {season.season_label}
                         </option>
+                    ))}
                 </select>
             </div>
         </form>
