@@ -62,7 +62,7 @@ function Form({ onCountryCodeChange }) {
                     <option value="">Select a season</option>
                     {seasons.map((season) => (
                         <option key={season.season_label} value={season.season_label}>
-                            Season {season.season_label}
+                            {season.season_label}
                         </option>
                     ))}
                 </select>
