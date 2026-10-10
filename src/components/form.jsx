@@ -9,35 +9,25 @@ function Form({ onCountryCodeChange }) {
     const [ selectedClub, setSelectedClub ] = useState('');
     const [ selectedSeason, setSelectedSeason ] = useState('');
 
-    useEffect(() => { apiClient.get("/v1/club")
-        .then(res => {
-            const clubList = Array.isArray(res.data) ? res.data : [];
-            setClubs(clubList);
-            setSelectedClub(clubList[0]?.name ?? '');
-            onCountryCodeChange?.(clubList[0]?.country_code ?? '');
-        })
-        .catch(err => setError(err.message))
-        .finally(() => setLoading(false));
-    }, [onCountryCodeChange])
+    useEffect(() => {
+        Promise.all([
+            apiClient.get("/v1/club"),
+            apiClient.get("/v1/seasons"),
+        ]) 
+            .then(([clubResponse, seasonResponse]) => {
+                const clubList = Array.isArray(clubResponse.data) ? clubResponse.data : [];
+                const seasonList = Array.isArray(seasonResponse.data) ? seasonResponse.data : [];
+                
+                setClubs(clubList);
+                setSelectedClub(clubList[0]?.name ?? '');
+                onCountryCodeChange?.(clubList[0]?.country_code ?? '');
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
-
-    // const currentClub = clubs.find((club) => club.name === selectedClub);
-    // const seasons = Array.from(
-    //     { length: Number(currentClub?.seasons_available) || 0 },
-    //     (_, index) => index + 1
-    // );
-
-    useEffect(() => { apiClient.get("/v1/seasons")
-        .then(res => {
-            const seasonList = Array.isArray(res.data) ? res.data : [];
-            setSeasons(seasonList);
-            setSelectedSeason(seasonList[0]?.season_label ?? '')
-        })
-        .catch(err => setError(err.message))
-        .finally(() => setLoading(false));        
-     });
+                setSeasons(seasonList);
+                setSelectedSeason(seasonList[0]?.season_label ?? '');
+            })
+            .catch(err => setError(err.message))
+            .finally(() => setLoading(false));
+        }, [onCountryCodeChange])
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
