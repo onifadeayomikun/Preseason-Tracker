@@ -36,7 +36,7 @@ function Form({ onCountryCodeChange }) {
     return (
         <form className="tracker-form" onSubmit={(event) => event.preventDefault()}>
             <div>
-                <label htmlFor="club-select">Club</label>
+                <label htmlFor="club-select">Club </label>
                 <select
                     id="club-select"
                     name="club"
@@ -52,7 +52,7 @@ function Form({ onCountryCodeChange }) {
             </div>
 
             <div>
-                <label htmlFor="season-select">Season</label>
+                <label htmlFor="season-select">Season </label>
                 <select 
                     id="season-select" 
                     name="season" 
