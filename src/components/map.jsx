@@ -2,13 +2,13 @@ import './App.css'
 import apiClient from '../api/client';
 import { useEffect, useState } from 'react';
 
-function WorldMap({ selectedCountryCode }) {
+function WorldMap({ selection }) {
     const [ data, setData ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
 
     useEffect(() => {
-        apiClient.get("/v1/clubs-countries/:club/preseason/:season")
+        apiClient.get(`/v1/clubs-countries/${encodeURIComponent(selection.club)}/preseason/${encodeURIComponent(selection.season)}`)
             .then(res => setData(Array.isArray(res.data) ? res.data : []))
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
@@ -25,7 +25,7 @@ function WorldMap({ selectedCountryCode }) {
     const countryStyles = [...itemsByCountry.keys()]
         .filter((countryCode) => /^[A-Z]{2}$/.test(countryCode))
         .map((countryCode) => `#${countryCode} { fill: ${getCountryFill(countryCode)}; }`)
-        .concat(/^[A-Z]{2}$/.test(selectedCountryCode) ? [`#${selectedCountryCode} { fill: #f4c95d !important; }`] : [])
+        .concat(/^[A-Z]{2}$/.test(selection.countryCode) ? [`#${selection.countryCode} { fill: #f4c95d !important; }`] : [])
         .join("\n");
 
     return (

@@ -27,7 +27,7 @@ function App() {
       </button>
       <Heading />
       <Form onSelectionChange={setSelection} />
-      <Map selectedCountryCode={selection.countryCode} />
+      <Map selection={selection} />
     </div>
   )
 }
