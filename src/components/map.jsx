@@ -6,6 +6,7 @@ function WorldMap({ selection }) {
     const [ data, setData ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
+    const [ hoveredCountry, setHoveredCountry ] = useState("");
 
     useEffect(() => {
         if (!selection.club || !selection.season) {
@@ -62,12 +63,30 @@ function WorldMap({ selection }) {
         ),
     ].join("\n");
 
+    function handleMouseOver(event) {
+        const country = event.target.closest("path");
+
+        if (country?.id) {
+            setHoveredCountry(country.getAttribute("title"));
+        }
+    }
+
     return (
         <section className="ag-canvas">
+             {hoveredCountry && (
+                <div className="country-tooltip">
+                    {hoveredCountry}
+                </div>
+        )}
         {error && <p className="map-status" role="status">Trip data unavailable; showing the map without trip highlights.</p>}
-        <svg className="ag-canvas_svg" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+        <svg className="ag-canvas_svg"
+            onMouseOver={handleMouseOver}
+            onMouseLeave={() => setHoveredCountry("")} 
+            xmlns="http://www.w3.org/2000/svg" 
+            xmlnsXlink="http://www.w3.org/1999/xlink"
             version="1.1" viewBox="0 0 1008 651">
             <style>{countryStyles}</style>
+            
             <path id="AE" title="United Arab Emirates"
             d="M619.874,393.722L620.373,393.573L620.477,394.411L622.671,393.93L624.99,394.009L626.684,394.1L628.604,392.028L630.695,390.054L632.467,388.146L633.001,389.202L633.382,391.639L631.949,391.651L631.72,393.648L632.216,394.073L630.947,394.674L630.939,395.919L630.122,397.175L630.049,398.394L629.484,399.032L621.056,397.508L619.981,394.428z" />
 
