@@ -1,7 +1,7 @@
 import apiClient from '../api/client';
 import { useEffect, useState } from 'react';
 
-function Form({ onCountryCodeChange }) {
+function Form({ onSelectionChange }) {
     const [ clubs, setClubs ] = useState([]);
     const [ seasons, setSeasons ] = useState([]);
     const [ error, setError ] = useState(null);
@@ -19,15 +19,11 @@ function Form({ onCountryCodeChange }) {
                 const seasonList = Array.isArray(seasonResponse.data) ? seasonResponse.data : [];
                 
                 setClubs(clubList);
-                setSelectedClub(clubList[0]?.name ?? '');
-                onCountryCodeChange?.(clubList[0]?.country_code ?? '');
-
                 setSeasons(seasonList);
-                setSelectedSeason(seasonList[0]?.season_label ?? '');
             })
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
-        }, [onCountryCodeChange])
+        }, [])
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -43,12 +39,16 @@ function Form({ onCountryCodeChange }) {
                     value={selectedClub}
                     onChange={(event) => {
                         const clubName = event.target.value;
+                        const club = clubs.find((item) => item.name === clubName);
                         setSelectedClub(clubName);
-
-                        const club = clubs.find((club) => club.name === clubName);
-                        onCountryCodeChange?.(club?.country_code ?? '');
+                        onSelectionChange?.({
+                            countryCode: club?.country_code ?? '',
+                            club: clubName,
+                            season: selectedSeason,
+                        });
                     }}
                 >
+                    <option value="">Select a club</option>
                     {clubs.map((club) => (
                         <option key={club.name} value={club.name}>
                             {club.name}
@@ -63,7 +63,16 @@ function Form({ onCountryCodeChange }) {
                     id="season-select" 
                     name="season" 
                     value={selectedSeason}
-                    onChange={(event) => setSelectedSeason(event.target.value)}
+                    onChange={(event) => {
+                        const season = event.target.value;
+                        const club = clubs.find((item) => item.name === selectedClub);
+                        setSelectedSeason(season);
+                        onSelectionChange?.({
+                            countryCode: club?.country_code ?? '',
+                            club: selectedClub,
+                            season,
+                        });
+                    }}
                 >
                     <option value="">Select a season</option>
                     {seasons.map((season) => (

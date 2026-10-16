@@ -8,7 +8,7 @@ function WorldMap({ selectedCountryCode }) {
     const [ loading, setLoading ] = useState(true);
 
     useEffect(() => {
-        apiClient.get('/api/items')
+        apiClient.get("/v1/clubs-countries/:club/preseason/:season")
             .then(res => setData(Array.isArray(res.data) ? res.data : []))
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
