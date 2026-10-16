@@ -8,11 +8,34 @@ function WorldMap({ selection }) {
     const [ loading, setLoading ] = useState(true);
 
     useEffect(() => {
+        if (!selection.club || !selection.season) {
+            setData([]);
+            setError(null);
+            setLoading(false);
+            return;
+        }
+
+        let cancelled = false;
+        setLoading(true);
+        setError(null);
+
         apiClient.get(`/v1/clubs-countries/${encodeURIComponent(selection.club)}/preseason/${encodeURIComponent(selection.season)}`)
-            .then(res => setData(Array.isArray(res.data) ? res.data : []))
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
-    }, [])
+            .then(res => {
+                if (!cancelled) setData(Array.isArray(res.data) ? res.data : []);
+            })
+            .catch(err => {
+                if (cancelled) return;
+                setData([]);
+                setError(err.message);
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [selection.club, selection.season])
 
     if (loading) return <p>Loading...</p>;
 
