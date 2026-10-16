@@ -35,21 +35,27 @@ function WorldMap({ selection }) {
         return () => {
             cancelled = true;
         };
-    }, [selection.club, selection.season])
+    }, [selection.club, selection.season]);
 
     if (loading) return <p>Loading...</p>;
 
-    const itemsByCountry = new Map(data.map((item) => [item.countryCode, item]));
-    function getCountryFill(countryCode) {
-        const count = itemsByCountry.get(countryCode)?.count ?? 0;
-        return count > 0 ? "#58b889" : "#5c6b7a";
-    }
+    const visitedCountryCodes = new Set(
+    data.flatMap((item) =>
+        (item.country_code ?? "")
+        .split(",")
+        .map((code) => code.trim().toUpperCase())
+        .filter((code) => /^[A-Z]{2}$/.test(code))
+    )
+    );
 
-    const countryStyles = [...itemsByCountry.keys()]
-        .filter((countryCode) => /^[A-Z]{2}$/.test(countryCode))
-        .map((countryCode) => `#${countryCode} { fill: ${getCountryFill(countryCode)}; }`)
-        .concat(/^[A-Z]{2}$/.test(selection.countryCode) ? [`#${selection.countryCode} { fill: #f4c95d !important; }`] : [])
-        .join("\n");
+    const countryStyles = [
+        ...(/^[A-Z]{2}$/.test(selection.countryCode)
+            ? [`#${selection.countryCode} { fill: #f4c95d; }`]
+            : []),
+        ...[...visitedCountryCodes].map(
+            (countryCode) => `#${countryCode} { fill: #58b889; }`
+        ),
+    ].join("\n");
 
     return (
         <section className="ag-canvas">
