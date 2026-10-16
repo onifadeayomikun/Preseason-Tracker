@@ -105,6 +105,19 @@ body {
   font-size: 0.875rem;
 }
 
+.country-tooltip {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -120%);
+  pointer-events: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(15, 23, 32, 0.9);
+  color: #edf9f0;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
 .ag-canvas_svg {
   display: block;
   width: 100%;

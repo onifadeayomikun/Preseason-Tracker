@@ -6,7 +6,7 @@ function WorldMap({ selection }) {
     const [ data, setData ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
-    const [ hoveredCountry, setHoveredCountry ] = useState("");
+    const [ hoveredCountry, setHoveredCountry ] = useState(null);
 
     useEffect(() => {
         if (!selection.club || !selection.season) {
@@ -63,25 +63,38 @@ function WorldMap({ selection }) {
         ),
     ].join("\n");
 
-    function handleMouseOver(event) {
+
+    function handleMouseMove(event) {
         const country = event.target.closest("path");
 
-        if (country?.id) {
-            setHoveredCountry(country.getAttribute("title"));
+        if (!country?.id) {
+            setHoveredCountry(null);
+            return;
         }
+
+        const mapBox = event.currentTarget.getBoundingClientRect();
+
+        setHoveredCountry({
+            name: country.getAttribute("title"),
+            x: event.clientX - mapBox.left,
+            y: event.clientY - mapBox.top,  
+        });
     }
 
     return (
         <section className="ag-canvas">
              {hoveredCountry && (
-                <div className="country-tooltip">
-                    {hoveredCountry}
+                <div
+                    className="country-tooltip"
+                    style={{ left: hoveredCountry.x, top: hoveredCountry.y }}
+                >
+                    {hoveredCountry.name}
                 </div>
         )}
         {error && <p className="map-status" role="status">Trip data unavailable; showing the map without trip highlights.</p>}
         <svg className="ag-canvas_svg"
-            onMouseOver={handleMouseOver}
-            onMouseLeave={() => setHoveredCountry("")} 
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setHoveredCountry(null)}
             xmlns="http://www.w3.org/2000/svg" 
             xmlnsXlink="http://www.w3.org/1999/xlink"
             version="1.1" viewBox="0 0 1008 651">
