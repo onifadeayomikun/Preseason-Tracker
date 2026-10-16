@@ -41,7 +41,13 @@ function Form({ onCountryCodeChange }) {
                     id="club-select"
                     name="club"
                     value={selectedClub}
-                    onChange={(event) => setSelectedClub(event.target.value)}
+                    onChange={(event) => {
+                        const clubName = event.target.value;
+                        setSelectedClub(clubName);
+
+                        const club = clubs.find((club) => club.name === clubName);
+                        onCountryCodeChange?.(club?.country_code ?? '');
+                    }}
                 >
                     {clubs.map((club) => (
                         <option key={club.name} value={club.name}>
