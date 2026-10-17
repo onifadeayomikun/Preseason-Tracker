@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 function WorldMap({ selection }) {
     const [ data, setData ] = useState([]);
+    const [ notes, setNotes ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
     const [ hoveredCountry, setHoveredCountry ] = useState(null);
@@ -63,6 +64,22 @@ function WorldMap({ selection }) {
         ),
     ].join("\n");
 
+    const notesInfo = data.flatMap((item) =>
+        (item.notes ?? "")
+            .split(";")
+            .map((entry) => entry.trim())
+            .filter(Boolean)
+            .map((entry) => {
+                const [code, ...rest] = entry.split(":");
+                return {
+                    code: code.trim().toUpperCase(),
+                    details: rest.join(":").trim(),
+                };
+            })
+            .filter(({ code }) => countryCodePattern.test(code))
+    );
+         
+    setNotes(notesInfo);
 
     function handleMouseMove(event) {
         const country = event.target.closest("path");
@@ -73,11 +90,13 @@ function WorldMap({ selection }) {
         }
 
         const mapBox = event.currentTarget.getBoundingClientRect();
+        const matchingNote = notes.findIndex((note) => note.code === country.getAttribute("id"));
 
         setHoveredCountry({
             name: country.getAttribute("title"),
             x: event.clientX - mapBox.left,
-            y: event.clientY - mapBox.top,  
+            y: event.clientY - mapBox.top,
+            notes: matchingNote[0],   
         });
     }
 
@@ -89,6 +108,8 @@ function WorldMap({ selection }) {
                     style={{ left: hoveredCountry.x, top: hoveredCountry.y }}
                 >
                     {hoveredCountry.name}
+                    <p>Opposition</p>
+                    {hoveredCountry.notes}
                 </div>
         )}
         {error && <p className="map-status" role="status">Trip data unavailable; showing the map without trip highlights.</p>}
