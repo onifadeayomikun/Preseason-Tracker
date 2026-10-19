@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 function WorldMap({ selection }) {
     const [ data, setData ] = useState([]);
-    const [ notes, setNotes ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
     const [ hoveredCountry, setHoveredCountry ] = useState(null);
@@ -64,7 +63,7 @@ function WorldMap({ selection }) {
         ),
     ].join("\n");
 
-    const notesInfo = data.flatMap((item) =>
+    const notes = data.flatMap((item) =>
         (item.notes ?? "")
             .split(";")
             .map((entry) => entry.trim())
@@ -78,8 +77,6 @@ function WorldMap({ selection }) {
             })
             .filter(({ code }) => countryCodePattern.test(code))
     );
-         
-    setNotes(notesInfo);
 
     function handleMouseMove(event) {
         const country = event.target.closest("path");
@@ -90,13 +87,13 @@ function WorldMap({ selection }) {
         }
 
         const mapBox = event.currentTarget.getBoundingClientRect();
-        const matchingNote = notes.findIndex((note) => note.code === country.getAttribute("id"));
+        const matchingNote = notes.find((note) => note.code === country.id);
 
         setHoveredCountry({
             name: country.getAttribute("title"),
             x: event.clientX - mapBox.left,
             y: event.clientY - mapBox.top,
-            notes: matchingNote[0],   
+            notes: matchingNote?.details ?? "",   
         });
     }
 
@@ -107,9 +104,9 @@ function WorldMap({ selection }) {
                     className="country-tooltip"
                     style={{ left: hoveredCountry.x, top: hoveredCountry.y }}
                 >
-                    {hoveredCountry.name}
-                    <p>Opposition</p>
-                    {hoveredCountry.notes}
+                    {hoveredCountry.notes ? (<p>Country: {hoveredCountry.name}</p>) : hoveredCountry.name} 
+                    {hoveredCountry.notes ? (<p>Opposition: {hoveredCountry.notes}</p>) : ""}
+                    
                 </div>
         )}
         {error && <p className="map-status" role="status">Trip data unavailable; showing the map without trip highlights.</p>}
