@@ -7,6 +7,7 @@ Preseason Tracker is a React web app for exploring a football club's preseason a
 - Select a club and season using options loaded from the API.
 - View preseason destinations highlighted on an interactive world map.
 - Hover over a destination to see its opposition note, when one is available.
+- Highlighted small regions have visible markers; select a marker to zoom in and use Reset map view to return.
 - View the young players included in that club's preseason squad.
 - Switch between light and dark themes.
 

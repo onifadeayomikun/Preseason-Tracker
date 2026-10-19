@@ -1,7 +1,9 @@
 import './App.css'
 import apiClient from '../api/client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supplementalMapRegions } from './mapRegions';
+
+const supplementalRegionIds = new Set(supplementalMapRegions.map(({ id }) => id));
 
 function WorldMap({ selection }) {
     const [ data, setData ] = useState([]);
@@ -10,12 +12,16 @@ function WorldMap({ selection }) {
     const [ loading, setLoading ] = useState(true);
     const [ hoveredCountry, setHoveredCountry ] = useState(null);
     const [ showPlayers, setShowPlayers ] = useState(false);
+    const [ smallRegionMarkers, setSmallRegionMarkers ] = useState([]);
+    const [ zoomViewBox, setZoomViewBox ] = useState(null);
+    const mapRef = useRef(null);
 
     useEffect(() => {
         if (!selection.club || !selection.season) {
             setData([]);
             setPlayers([]);
             setError(null);
+            setZoomViewBox(null);
             setLoading(false);
             return;
         }
@@ -23,6 +29,7 @@ function WorldMap({ selection }) {
         let cancelled = false;
         setLoading(true);
         setError(null);
+        setZoomViewBox(null);
         Promise.all([
             apiClient.get(`/v1/clubs-countries/${encodeURIComponent(selection.club)}/preseason/${encodeURIComponent(selection.season)}`),
             apiClient.get(`/v1/clubs/${encodeURIComponent(selection.club)}/preseason/${encodeURIComponent(selection.season)}`),
@@ -46,6 +53,26 @@ function WorldMap({ selection }) {
         };
     }, [selection.club, selection.season]);
 
+    useEffect(() => {
+        if (loading || !mapRef.current) return;
+
+        const markers = [...mapRef.current.querySelectorAll('path[id]')]
+            .filter((path) => !supplementalRegionIds.has(path.id))
+            .flatMap((path) => {
+                const bounds = path.getBBox();
+                if (bounds.width * bounds.height >= 80) return [];
+
+                return [{
+                    id: path.id,
+                    title: path.getAttribute('title') ?? path.id,
+                    x: bounds.x + bounds.width / 2,
+                    y: bounds.y + bounds.height / 2,
+                }];
+            });
+
+        setSmallRegionMarkers(markers);
+    }, [loading]);
+
     if (loading) return <p>Loading...</p>;
 
     const countryCodePattern = /^(?:[A-Z]{2}|GB-(?:ENG|SCT|WLS|NIR))$/;
@@ -62,6 +89,9 @@ function WorldMap({ selection }) {
         countryCode === "GB" ? "#GB > path" : `#${countryCode}`;
 
     const selectedCountryCode = selection.countryCode?.trim().toUpperCase();
+    const isRegionVisited = (countryCode) =>
+        visitedCountryCodes.has(countryCode)
+        || (countryCode.startsWith("GB-") && visitedCountryCodes.has("GB"));
     const countryStyles = [
         ...(countryCodePattern.test(selectedCountryCode)
             ? [`${getCountrySelector(selectedCountryCode)} { fill: #f4c95d; }`]
@@ -70,6 +100,19 @@ function WorldMap({ selection }) {
             (countryCode) => `${getCountrySelector(countryCode)} { fill: #58b889; }`
         ),
     ].join("\n");
+    const highlightedMarkers = [
+        ...smallRegionMarkers,
+        ...supplementalMapRegions.map(({ id, title, marker }) => ({
+            id,
+            title,
+            x: marker[0],
+            y: marker[1],
+        })),
+    ].filter(({ id }) =>
+        id === selectedCountryCode
+        || (selectedCountryCode === "GB" && id.startsWith("GB-"))
+        || isRegionVisited(id)
+    );
 
     const notes = data.flatMap((item) =>
         (item.notes ?? "")
@@ -87,22 +130,31 @@ function WorldMap({ selection }) {
     );
 
     function handleMouseMove1(event) {
-        const country = event.target.closest("path");
+        const country = event.target.closest("path[id], [data-region-id]");
+        const countryCode = country?.dataset.regionId ?? country?.id;
 
-        if (!country?.id) {
+        if (!countryCode) {
             setHoveredCountry(null);
             return;
         }
 
         const mapBox = event.currentTarget.getBoundingClientRect();
-        const matchingNote = notes.find((note) => note.code === country.id);
+        const matchingNote = notes.find((note) => note.code === countryCode);
 
         setHoveredCountry({
-            name: country.getAttribute("title"),
+            name: country.getAttribute("title") ?? country.getAttribute("aria-label")?.replace(/^Zoom to /, "") ?? countryCode,
             x: event.clientX - mapBox.left,
             y: event.clientY - mapBox.top,
             notes: matchingNote?.details ?? "",   
         });
+    }
+
+    function zoomToRegion(marker) {
+        const width = 120;
+        const height = width * 651 / 1008;
+        const left = Math.max(0, Math.min(1008 - width, marker.x - width / 2));
+        const top = Math.max(0, Math.min(651 - height, marker.y - height / 2));
+        setZoomViewBox(`${left} ${top} ${width} ${height}`);
     }
 
     return (
@@ -117,7 +169,7 @@ function WorldMap({ selection }) {
                     
                 </div>
         )}
-        {error && <p className="map-status" role="status">Trip data unavailable; showing the map without trip highlights.</p>}
+        {error && <p className="map-status" role="status">Trip data unavailable; map shown without highlights.</p>}
         <div
             className="youngsters-panel"
             onMouseEnter={() => setShowPlayers(true)}
@@ -152,12 +204,23 @@ function WorldMap({ selection }) {
                 </div>
             )}
         </div>
-        <svg className="ag-canvas_svg"
+        {zoomViewBox && (
+            <button
+                type="button"
+                className="map-zoom-reset"
+                onClick={() => setZoomViewBox(null)}
+            >
+                Reset map view
+            </button>
+        )}
+        <svg
+            ref={mapRef}
+            className="ag-canvas_svg"
             onMouseMove={handleMouseMove1}
             onMouseLeave={() => setHoveredCountry(null)}
             xmlns="http://www.w3.org/2000/svg" 
             xmlnsXlink="http://www.w3.org/1999/xlink"
-            version="1.1" viewBox="0 0 1008 651">
+            version="1.1" viewBox={zoomViewBox ?? "0 0 1008 651"}>
             <style>{countryStyles}</style>
             
             <path id="AE" title="United Arab Emirates"
@@ -518,17 +581,54 @@ function WorldMap({ selection }) {
             d="M567.105,489.207L568.429,490.466L569.142,492.868L568.664,493.636L568.101,495.938L568.639,498.299L567.757,499.292L566.906,501.951L568.38,502.695L559.872,505.065L560.138,507.12L558.014,507.516L556.417,508.67L556.076,509.676L555.073,509.904L552.634,512.299L551.082,514.192L550.135,514.26L549.224,513.922L546.09,513.602L545.586,513.383L545.565,513.141L544.458,512.482L542.641,512.314L540.345,512.978L538.515,511.155L536.623,508.778L536.752,499.62L542.591,499.656L542.352,498.67L542.77,497.602L542.277,496.266L542.596,494.887L542.299,494.006L543.267,494.077L543.427,494.96L544.741,494.891L546.521,495.153L547.458,496.444L549.704,496.841L551.418,495.943L552.047,497.435L554.196,497.833L555.229,499.049L556.38,500.622L558.526,500.646L558.292,497.566L557.522,498.084L555.562,496.976L554.805,496.469L555.152,493.618L555.65,490.267L555.022,489.021L555.821,487.222L556.573,486.885L560.339,486.41L561.443,486.696L562.615,487.413L563.732,487.885L565.514,488.359z" />
             <path id="ZW" title="Zimbabwe"
             d="M562.709,526.998L561.219,526.697L560.274,527.059L558.917,526.548L557.776,526.516L555.989,525.158L553.821,524.698L552.996,522.803L552.989,521.752L551.788,521.432L548.615,518.177L547.733,516.471L547.169,515.946L546.09,513.602L549.224,513.922L550.135,514.26L551.082,514.192L552.634,512.299L555.073,509.904L556.076,509.676L556.417,508.67L558.014,507.516L560.138,507.12L560.319,508.2L562.658,508.142L563.957,508.754L564.562,509.472L565.896,509.683L567.353,510.617L567.359,514.312L566.813,516.347L566.692,518.55L567.143,519.426L566.826,521.172L566.402,521.443L565.663,523.593z" />
-            {supplementalMapRegions.map(({ id, title, d, marker }) => (
+            {supplementalMapRegions.map(({ id, title, d }) => (
                 <path
                     key={id}
                     id={id}
                     title={title}
-                    d={marker
-                        ? `${d}M${marker[0]},${marker[1] - 1} ${marker[0] + 1},${marker[1]} ${marker[0]},${marker[1] + 1} ${marker[0] - 1},${marker[1]}Z`
-                        : d}
+                    d={d}
                     fillRule="evenodd"
                 />
             ))}
+            {highlightedMarkers.map((marker) => {
+                const isVisited = isRegionVisited(marker.id);
+                const isSelected = !isVisited && (
+                    marker.id === selectedCountryCode
+                    || (selectedCountryCode === "GB" && marker.id.startsWith("GB-"))
+                );
+                return (
+                    <g
+                        key={`marker-${marker.id}`}
+                        className={`region-marker-target${isSelected ? " is-selected" : ""}`}
+                        data-region-id={marker.id}
+                        aria-label={`Zoom to ${marker.title}`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => zoomToRegion(marker)}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                zoomToRegion(marker);
+                            }
+                        }}
+                    >
+                        <title>{marker.title}</title>
+                        <circle
+                            className="region-marker-hit-area"
+                            cx={marker.x}
+                            cy={marker.y}
+                            r={zoomViewBox ? 2 : 14}
+                        />
+                        <circle
+                            className="region-marker"
+                            cx={marker.x}
+                            cy={marker.y}
+                            r={zoomViewBox ? 0.8 : 4}
+                            fill={isSelected ? "#f4c95d" : "#58b889"}
+                        />
+                    </g>
+                );
+            })}
         </svg>
         </section>
     )

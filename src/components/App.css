@@ -109,6 +109,21 @@ body {
   left: 1rem;
 }
 
+.map-zoom-reset {
+  position: absolute;
+  z-index: 3;
+  bottom: 1rem;
+  left: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(237, 249, 240, 0.35);
+  border-radius: 4px;
+  background: rgba(15, 23, 32, 0.9);
+  color: #edf9f0;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
 .youngsters-panel {
   position: absolute;
   z-index: 3;
@@ -194,4 +209,33 @@ body {
 
 .ag-canvas_svg path:hover {
   fill: var(--map-fill-hover);
+}
+
+.region-marker {
+  stroke: var(--map-bg);
+  stroke-width: 1;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.region-marker-target {
+  cursor: zoom-in;
+}
+
+.region-marker-target:focus-visible {
+  outline: none;
+}
+
+.region-marker-hit-area {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.region-marker-target:hover .region-marker {
+  stroke-width: 1.75;
+}
+
+.region-marker-target:focus-visible .region-marker {
+  stroke: #fff;
+  stroke-width: 2.5;
 }
