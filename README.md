@@ -1,9 +1,9 @@
 # Preseason Tracker
 
-Tracks a club's U21 players and the countries they played in during preseason, visualized on a world map.
+Tracks a club's U21 players and the countries and territories they played in during preseason, visualized on a world map.
 
 ## Features
-- World map showing countries visited during preseason
+- World map showing countries and territories visited during preseason
 - U21 player roster tied to each trip
 
 ## Tech Stack
