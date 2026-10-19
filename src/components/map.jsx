@@ -8,7 +8,7 @@ function WorldMap({ selection }) {
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
     const [ hoveredCountry, setHoveredCountry ] = useState(null);
-    const [ hoveredPlayers, setHoveredPlayers ] = useState(null);
+    const [ showPlayers, setShowPlayers ] = useState(false);
 
     useEffect(() => {
         if (!selection.club || !selection.season) {
@@ -104,10 +104,6 @@ function WorldMap({ selection }) {
         });
     }
 
-    function handleMouseMove2(event) {
-
-    }
-
     return (
         <section className="ag-canvas">
              {hoveredCountry && (
@@ -121,12 +117,40 @@ function WorldMap({ selection }) {
                 </div>
         )}
         {error && <p className="map-status" role="status">Trip data unavailable; showing the map without trip highlights.</p>}
-        <p className="youngsters-taken"
-            onMouseMove={handleMouseMove2}     
-            onMouseLeave={() => setHoveredPlayers(null)}
+        <div
+            className="youngsters-panel"
+            onMouseEnter={() => setShowPlayers(true)}
+            onMouseLeave={() => setShowPlayers(false)}
         >
-            Youngsters Taken 
-        </p>
+            <button
+                type="button"
+                className="youngsters-taken"
+                aria-expanded={showPlayers}
+                aria-controls="youngsters-list"
+                onFocus={() => setShowPlayers(true)}
+                onBlur={() => setShowPlayers(false)}
+            >
+                Youngsters Taken
+            </button>
+            {showPlayers && (
+                <div className="players-tooltip" id="youngsters-list" role="tooltip">
+                    {players.length > 0 ? (
+                        <ul>
+                            {players.map((player, index) => (
+                                <li key={`${player.player_name}-${index}`}>
+                                    <strong>{player.player_name}</strong>
+                                    <span>{player.position || "Position unavailable"}</span>
+                                    <span>{player.nationality || "Nationality unavailable"}</span>
+                                    <span>Age: {player.age ?? "Unavailable"}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No youngsters available for this club or season.</p>
+                    )}
+                </div>
+            )}
+        </div>
         <svg className="ag-canvas_svg"
             onMouseMove={handleMouseMove1}
             onMouseLeave={() => setHoveredCountry(null)}
