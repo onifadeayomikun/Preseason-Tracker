@@ -139,8 +139,8 @@ function WorldMap({ selection }) {
                             {players.map((player, index) => (
                                 <li key={`${player.player_name}-${index}`}>
                                     <strong>{player.player_name}</strong>
-                                    <span>{player.position || "Position unavailable"}</span>
-                                    <span>{player.nationality || "Nationality unavailable"}</span>
+                                    <span>Position: {player.position || "Unavailable"}</span>
+                                    <span>Nationality: {player.nationality || "Unavailable"}</span>
                                     <span>Age: {player.age ?? "Unavailable"}</span>
                                 </li>
                             ))}
