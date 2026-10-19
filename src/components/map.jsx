@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 function WorldMap({ selection }) {
     const [ data, setData ] = useState([]);
+    const [ players, setPlayers ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
     const [ hoveredCountry, setHoveredCountry ] = useState(null);
@@ -11,6 +12,7 @@ function WorldMap({ selection }) {
     useEffect(() => {
         if (!selection.club || !selection.season) {
             setData([]);
+            setPlayers([]);
             setError(null);
             setLoading(false);
             return;
@@ -19,14 +21,18 @@ function WorldMap({ selection }) {
         let cancelled = false;
         setLoading(true);
         setError(null);
-
-        apiClient.get(`/v1/clubs-countries/${encodeURIComponent(selection.club)}/preseason/${encodeURIComponent(selection.season)}`)
-            .then(res => {
-                if (!cancelled) setData(Array.isArray(res.data) ? res.data : []);
+        Promise.all([
+            apiClient.get(`/v1/clubs-countries/${encodeURIComponent(selection.club)}/preseason/${encodeURIComponent(selection.season)}`),
+            apiClient.get(`/v1/clubs/${encodeURIComponent(selection.club)}/preseason/${encodeURIComponent(selection.season)}`),
+        ])    
+            .then(([dataResponse, playersResponse]) => {
+                if (!cancelled) setData(Array.isArray(dataResponse.data) ? dataResponse.data : []);
+                if (!cancelled) setPlayers(Array.isArray(playersResponse.data) ? playersResponse.data : []);
             })
             .catch(err => {
                 if (cancelled) return;
                 setData([]);
+                setPlayers([]);
                 setError(err.message);
             })
             .finally(() => {
