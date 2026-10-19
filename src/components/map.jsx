@@ -8,6 +8,7 @@ function WorldMap({ selection }) {
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
     const [ hoveredCountry, setHoveredCountry ] = useState(null);
+    const [ hoveredPlayers, setHoveredPlayers ] = useState(null);
 
     useEffect(() => {
         if (!selection.club || !selection.season) {
@@ -84,7 +85,7 @@ function WorldMap({ selection }) {
             .filter(({ code }) => countryCodePattern.test(code))
     );
 
-    function handleMouseMove(event) {
+    function handleMouseMove1(event) {
         const country = event.target.closest("path");
 
         if (!country?.id) {
@@ -103,6 +104,10 @@ function WorldMap({ selection }) {
         });
     }
 
+    function handleMouseMove2(event) {
+
+    }
+
     return (
         <section className="ag-canvas">
              {hoveredCountry && (
@@ -116,8 +121,14 @@ function WorldMap({ selection }) {
                 </div>
         )}
         {error && <p className="map-status" role="status">Trip data unavailable; showing the map without trip highlights.</p>}
+        <p className="youngsters-taken"
+            onMouseMove={handleMouseMove2}     
+            onMouseLeave={() => setHoveredPlayers(null)}
+        >
+            Youngsters Taken 
+        </p>
         <svg className="ag-canvas_svg"
-            onMouseMove={handleMouseMove}
+            onMouseMove={handleMouseMove1}
             onMouseLeave={() => setHoveredCountry(null)}
             xmlns="http://www.w3.org/2000/svg" 
             xmlnsXlink="http://www.w3.org/1999/xlink"

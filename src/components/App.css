@@ -92,17 +92,25 @@ body {
   display: block;
 }
 
-.map-status {
+.map-status,
+.youngsters-taken {
   position: absolute;
   z-index: 1;
   top: 0.75rem;
-  left: 1rem;
   margin: 0;
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
   background: rgba(15, 23, 32, 0.88);
   color: #edf9f0;
   font-size: 0.875rem;
+}
+
+.map-status {
+  left: 1rem;
+}
+
+.youngsters-taken {
+  right: 1rem;
 }
 
 .country-tooltip {
