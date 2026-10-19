@@ -124,6 +124,50 @@ body {
   cursor: pointer;
 }
 
+.map-zoom-reset + .ag-canvas_svg + .map-legend {
+  bottom: 3.85rem;
+}
+
+.map-legend {
+  position: absolute;
+  z-index: 3;
+  left: 1rem;
+  bottom: 1rem;
+  display: grid;
+  gap: 0.35rem;
+  max-width: calc(100% - 2rem);
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(237, 249, 240, 0.2);
+  border-radius: 4px;
+  background: rgba(15, 23, 32, 0.9);
+  color: #edf9f0;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+.map-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.map-legend__swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: 0 0 auto;
+  border: 1px solid rgba(15, 23, 32, 0.6);
+  border-radius: 2px;
+}
+
+.map-legend__swatch--visited {
+  background: #58b889;
+}
+
+.map-legend__swatch--selected {
+  background: #f4c95d;
+}
+
 .youngsters-panel {
   position: absolute;
   z-index: 3;

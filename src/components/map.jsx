@@ -630,6 +630,16 @@ function WorldMap({ selection }) {
                 );
             })}
         </svg>
+        <aside className="map-legend" aria-label="Map colour key">
+            <span className="map-legend__item">
+                <i className="map-legend__swatch map-legend__swatch--visited" aria-hidden="true" />
+                Preseason destination
+            </span>
+            <span className="map-legend__item">
+                <i className="map-legend__swatch map-legend__swatch--selected" aria-hidden="true" />
+                Country of Origin
+            </span>
+        </aside>
         </section>
     )
 }
